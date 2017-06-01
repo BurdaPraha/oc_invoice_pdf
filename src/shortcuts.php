@@ -3,6 +3,11 @@
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
+/**
+ * Helper for printing invoices
+ * @param $view
+ * @param $data
+ */
 function invoice_pdf($view, $data) {
 
     /*
@@ -15,7 +20,11 @@ function invoice_pdf($view, $data) {
     $orders     = $data['orders'];
 
     $options = new Options();
-    $options->set('defaultFont', 'Courier');
+    $options->set('defaultFont', 'serif')
+        ->set('isHtml5ParserEnabled', true)
+        ->set('isFontSubsettingEnabled', true)
+        ->set('isPhpEnabled', true)
+        ->set('tempDir', INVOICES_DIR);
 
     if (count($orders) > 1)
     {
@@ -28,11 +37,8 @@ function invoice_pdf($view, $data) {
         $name       = "{$invoice}_{$shop_name}";
     }
 
-    $pdf = new Dompdf(); // $options
+    $pdf = new Dompdf($options);
     $pdf->loadHtml($view);
-
-    //$pdf->setPaper('A4', 'landscape');
-
     $pdf->render();
     $pdf->stream("{$name}.pdf");
 }
