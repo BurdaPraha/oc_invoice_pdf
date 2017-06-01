@@ -88,7 +88,9 @@
 
                 if ($pdf)
                 {
-                    $this->response->setOutput(invoice_pdf($this->render(), $this->data['orders']));
+                    $order_view = $this->load->view('sale/order_invoice', $data);
+                    $pdf_printer = invoice_pdf($order_view, $data);
+                    $this->response->setOutput();
                 }
 
             ]]>
