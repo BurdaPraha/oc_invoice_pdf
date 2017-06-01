@@ -2,6 +2,7 @@
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Svg\Surface;
 
 /**
  * Helper for printing invoices
@@ -10,17 +11,11 @@ use Dompdf\Options;
  */
 function invoice_pdf($view, $data) {
 
-    /*
-    echo "<pre>";
-    var_dump($data);
-    echo "</pre>";
-    */
-
     $shop_name  = "{$data['name']}";
     $orders     = $data['orders'];
 
     $options = new Options();
-    $options->set('defaultFont', 'serif')
+    $options->set('defaultFont', 'sans-serif')
         ->set('isHtml5ParserEnabled', true)
         ->set('isFontSubsettingEnabled', true)
         ->set('isPhpEnabled', true)
@@ -41,4 +36,9 @@ function invoice_pdf($view, $data) {
     $pdf->loadHtml($view);
     $pdf->render();
     $pdf->stream("{$name}.pdf");
+
+    // todo: saving as file
+    // $pdf->output();
+    // file_put_contents($_SERVER['DOCUMENT_ROOT']."/tmp/".$name, $output);
+    // and redirect to the file
 }
