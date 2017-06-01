@@ -7,7 +7,7 @@
     <file name="admin/language/cs-cz/cs-cz.php">
         <operation>
             <search position="after"><![CDATA[<?php]]></search>
-            <add><![CDATA[$_['button_pdf_invoice']	= 'PDF';]]></add>
+            <add><![CDATA[$_['button_pdf_invoice']	= 'PDF faktura';]]></add>
         </operation>
     </file>
 
@@ -31,12 +31,10 @@
 
     <file name="admin/view/template/sale/order_info.tpl">
         <operation>
-            <search position="after" offset="-1"><![CDATA[<div class="pull-right">]]></search>
+            <search position="replace"><![CDATA[<a href="<?php echo $invoice; ?>" target="_blank" data-toggle="tooltip" title="<?php echo $button_invoice_print; ?>" class="btn btn-info"><i class="fa fa-print"></i></a>]]></search>
             <add>
                 <![CDATA[
-                    <a data-toggle="tooltip" onclick="window.open('<?php echo $invoice; ?>&pdf=true');" class="btn btn-success">
-                    <i class="fa fa-file-pdf-o"></i> <?php echo $button_pdf_invoice; ?>
-                    </a>
+                    <a href="<?php echo $invoice; ?>&pdf=true" target="_blank" data-toggle="tooltip" title="<?php echo $button_pdf_invoice; ?>" class="btn btn-success"><i class="fa fa-file-pdf-o"></i></a> <a href="<?php echo $invoice; ?>" target="_blank" data-toggle="tooltip" title="<?php echo $button_invoice_print; ?>" class="btn btn-info"><i class="fa fa-print"></i></a>
                 ]]>
             </add>
         </operation>
@@ -47,9 +45,8 @@
             <search position="after"><![CDATA[<div class="pull-right">]]></search>
             <add>
                 <![CDATA[
-                    <a data-toggle="tooltip" onclick="$('#form').attr('action', '<?php echo $invoice; ?>&pdf=true'); $('#form').attr('target', '_blank'); $('#form').submit();" class="btn btn-success">
+                    <a data-toggle="tooltip" onclick="$('#form').attr('action', '<?php echo $invoice; ?>&pdf=true'); $('#form').attr('target', '_blank'); $('#form').submit();" class="btn btn-success" title="<?php echo $button_pdf_invoice; ?>">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                    <?php echo $button_pdf_invoice; ?>
                     </a>
                 ]]>
             </add>
