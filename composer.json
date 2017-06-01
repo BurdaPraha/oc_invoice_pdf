@@ -1,8 +1,8 @@
 {
   "name": "burdapraha/oc_invoice_pdf",
   "type": "vqmod-plugin",
-  "description": "",
-  "keywords": ["opencart"],
+  "description": "Opencart 2.x invoice to PDF",
+  "keywords": ["opencart", "opencart-2x", "pdf", "invoice-pdf", "invoice", "czech-republic"],
   "homepage": "http://burda.cz",
   "license": "MIT",
   "require": {

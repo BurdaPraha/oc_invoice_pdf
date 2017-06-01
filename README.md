@@ -22,3 +22,8 @@ note: developed on version 2.3.2, other versions can need some edits - **fell fr
 For example: `define('INVOICES_DIR', DIR_IMAGE . '/invoices');` and fix this folder for reading from web by .htaccess
 5. optionally you can add row to your `.gitignore` file with path to tracy.xml (example: upload/vqmod/xml/invoice_pdf.xml)
 5. celebrate!
+
+## Credits
+
+- using [dompdf](https://github.com/dompdf/dompdf) to printing
+- inspired by [Invoice to PDF](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=26964&filter_search=invoice%20pdf&filter_license=0)
