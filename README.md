@@ -1,8 +1,8 @@
 # Invoices to PDF for Opencart 2.x
 
-note: developed on version 2.3.2, other versions can need some edits - fell free to contribute!
+note: developed on version 2.3.2, other versions can need some edits - **fell free to contribute!**
 
-# Installation
+## Installation
 
 1. Requiring installed [Vqmod](https://github.com/vqmod/vqmod) because VqMod doesn't support installing via composer itself.
 2. `composer require burdapraha/oc_invoice_pdf dev-master`
