@@ -11,15 +11,9 @@ use Svg\Surface;
  */
 function invoice_pdf($view, $data) {
 
+    $storage    = INVOICES_DIR;
     $shop_name  = "{$data['name']}";
     $orders     = $data['orders'];
-
-    $options = new Options();
-    $options->set('defaultFont', 'sans-serif')
-        ->set('isHtml5ParserEnabled', true)
-        ->set('isFontSubsettingEnabled', true)
-        ->set('isPhpEnabled', true)
-        ->set('tempDir', INVOICES_DIR);
 
     if (count($orders) > 1)
     {
@@ -32,13 +26,46 @@ function invoice_pdf($view, $data) {
         $name       = "{$invoice}_{$shop_name}";
     }
 
-    $pdf = new Dompdf($options);
-    $pdf->loadHtml($view);
-    $pdf->render();
-    $pdf->stream("{$name}.pdf");
+    $name       = "{$name}.pdf";
+    $location   = "{$storage}/{$name}";
 
-    // todo: saving as file
-    // $pdf->output();
-    // file_put_contents($_SERVER['DOCUMENT_ROOT']."/tmp/".$name, $output);
-    // and redirect to the file
+    //
+    // check existing invoice in local storage
+    //
+    if(!file_exists($location))
+    {
+        $options = new Options();
+        $options->set('defaultFont', 'sans-serif')
+            ->set('isHtml5ParserEnabled', true)
+            ->set('isFontSubsettingEnabled', true)
+            ->set('isPhpEnabled', true)
+            ->set('tempDir', $storage);
+
+        $pdf = new Dompdf($options);
+        $pdf->loadHtml($view);
+
+
+        // todo: check order status before saving
+        file_put_contents($location, $pdf->output());
+
+        //$pdf->render();
+        //$pdf->stream("{$name}.pdf");
+    }
+
+    invoice_download($location);
+}
+
+
+/**
+ * Response as file download
+ * @param $location
+ */
+function invoice_download($location) {
+
+    header("Content-Description: File Transfer");
+    header("Content-Type: application/octet-stream");
+    header("Content-Disposition: attachment; filename='" . basename($location) . "'");
+
+    readfile ($location);
+    exit();
 }
