@@ -17,7 +17,13 @@ function invoice_pdf($view, $data) {
 
     if (count($orders) > 1)
     {
-        $name = "Orders - {$shop_name}";
+        $symbols = [];
+        foreach($orders as $k => $o) {
+            $symbols[] = $o['invoice_no'];
+        }
+        $symbols = implode("-", $symbols);
+
+        $name = "Invoices_{$symbols}";
     }
     else
     {
@@ -43,7 +49,7 @@ function invoice_pdf($view, $data) {
 
         $pdf = new Dompdf($options);
         $pdf->loadHtml($view);
-
+        $pdf->render();
 
         // todo: check order status before saving
         file_put_contents($location, $pdf->output());
