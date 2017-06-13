@@ -2,7 +2,7 @@
     <id><![CDATA[Invoice to PDF]]></id>
     <version><![CDATA[1.0.1]]></version>
     <vqmver><![CDATA[1.00]]></vqmver>
-    <author><![CDATA[BurdaPraha - inspired from: Ruhama IT Solution]]></author>
+    <author><![CDATA[BurdaPraha]]></author>
 
     <file name="admin/language/cs-cz/cs-cz.php">
         <operation>
@@ -45,10 +45,18 @@
             <search position="after"><![CDATA[<div class="pull-right">]]></search>
             <add>
                 <![CDATA[
-                    <a data-toggle="tooltip" onclick="$('#form').attr('action', '<?php echo $invoice; ?>&pdf=true'); $('#form').attr('target', '_blank'); $('#form').submit();" class="btn btn-success" title="<?php echo $button_pdf_invoice; ?>">
-                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                    </a>
+                    <button type="submit" id="button-pdf" form="form-order" formaction="<?php echo $invoice; ?>&pdf=true" formtarget="_blank" data-toggle="tooltip" class="btn btn-success" title="<?php echo $button_pdf_invoice; ?>"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></button>
                 ]]>
+            </add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[$('#button-shipping, #button-invoice')]]></search>
+            <add><![CDATA[$('#button-shipping, #button-invoice, #button-pdf')]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[if (selected.length) {]]></search>
+            <add>
+                <![CDATA[$('#button-pdf').prop('disabled', false);]]>
             </add>
         </operation>
     </file>
@@ -108,6 +116,17 @@
                         font-family: dejavu sans, sans-serif !important;
                       }
                     </style>
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <file name="catalog/model/checkout/order.php">
+        <operation info="invoice request todooooooooo">
+            <search position="before"><![CDATA[]]></search>
+            <add>
+                <![CDATA[
+
                 ]]>
             </add>
         </operation>
