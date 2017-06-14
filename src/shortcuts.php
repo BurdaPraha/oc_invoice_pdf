@@ -8,8 +8,10 @@ use Svg\Surface;
  * Helper for printing invoices
  * @param $view
  * @param $data
+ * @param bool|false $return_path
+ * @return string
  */
-function invoice_pdf($view, $data) {
+function invoice_pdf($view, $data, $return_path = false) {
 
     $storage    = INVOICES_DIR;
     $shop_name  = "{$data['name']}";
@@ -58,7 +60,14 @@ function invoice_pdf($view, $data) {
         //$pdf->stream("{$name}.pdf");
     }
 
-    invoice_download($location);
+    if($return_path)
+    {
+        return $location;
+    }
+    else
+    {
+        invoice_download($location);
+    }
 }
 
 
