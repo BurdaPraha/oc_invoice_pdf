@@ -122,10 +122,27 @@
     </file>
 
     <file name="catalog/model/checkout/order.php">
-        <operation info="invoice request todooooooooo">
-            <search position="before"><![CDATA[]]></search>
+        <operation info="generate invoice number">
+            <search position="before" offset="3"><![CDATA[// Admin Alert Mail]]></search>
             <add>
                 <![CDATA[
+
+
+                    /* todo:   
+
+                    $this->load->model('sale/order');
+			        $invoice_no = $this->model_sale_order->createInvoiceNo($order_id);
+
+                    // $order_data ???
+
+                    $order_view = $this->load->view('sale/order_invoice', $order_data);
+                    $pdf_printer = invoice_pdf($order_view, $data);
+
+                    // add invoice to the mail
+                    $mail->addAttachment($pdf_printer);
+                    
+                    */
+
 
                 ]]>
             </add>
