@@ -121,29 +121,68 @@
         </operation>
     </file>
 
+
+    <file name="admin/controller/startup/login.php,admin/controller/startup/permission.php,admin/controller/user/user_permission.php">
+        <operation info="ignore our module for login">
+            <search position="after"><![CDATA['common/forgotten',]]></search>
+            <add>
+                <![CDATA['module/invoicepdf',]]>
+            </add>
+        </operation>
+    </file>
+
+
+    <file name="system/helper/general.php">
+        <operation info="curl function">
+            <search position="after"><![CDATA[<?php]]></search>
+            <add>
+                <![CDATA[
+                    if(!function_exists('do_curl_request')){
+                        function do_curl_request($url, $params=array()) {
+                            $ch = curl_init();
+                            curl_setopt($ch,CURLOPT_URL, $url);
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                            curl_setopt($ch, CURLOPT_COOKIEJAR, '/tmp/apicookie.txt');
+                            curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/apicookie.txt');
+
+                            $params_string = '';
+                            if (is_array($params) && count($params)) {
+                                foreach($params as $key=>$value) {
+                                    $params_string .= $key.'='.$value.'&';
+                                }
+                                rtrim($params_string, '&');
+
+                                curl_setopt($ch,CURLOPT_POST, count($params));
+                                curl_setopt($ch,CURLOPT_POSTFIELDS, $params_string);
+                            }
+
+                            //execute post
+                            $result = curl_exec($ch);
+
+                            //close connection
+                            curl_close($ch);
+
+                            return $result;
+                        }
+                    }
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+
     <file name="catalog/model/checkout/order.php">
         <operation info="generate invoice number">
             <search position="before" offset="3"><![CDATA[// Admin Alert Mail]]></search>
             <add>
                 <![CDATA[
+                    $url = "http://predplatsi.local:8888/admin/index.php?route=module/invoicepdf&order_id={$order_id}";
+                    $json = do_curl_request($url, $fields);
 
-
-                    /* todo:   
-
-                    $this->load->model('sale/order');
-			        $invoice_no = $this->model_sale_order->createInvoiceNo($order_id);
-
-                    // $order_data ???
-
-                    $order_view = $this->load->view('sale/order_invoice', $order_data);
-                    $pdf_printer = invoice_pdf($order_view, $data);
+                    $invoice = json_decode($json)['invoice'];
 
                     // add invoice to the mail
-                    $mail->addAttachment($pdf_printer);
-                    
-                    */
-
-
+                    $mail->addAttachment($invoice);
                 ]]>
             </add>
         </operation>

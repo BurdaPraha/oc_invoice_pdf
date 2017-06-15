@@ -11,10 +11,10 @@ note: developed on version 2.3.2, other versions can need some edits - **fell fr
 ```
     "scripts": {
         "post-install-cmd": [
-            "php -r \"copy('vendor/burdapraha/oc_invoice_pdf/vqmod/xml/invoice_pdf.xml', 'upload/vqmod/xml/invoice_pdf.xml');\""
+            "php -r \"copy('vendor/burdapraha/oc_invoice_pdf/upload/vqmod/xml/invoice_pdf.xml', 'upload/vqmod/xml/invoice_pdf.xml');\""
         ],
         "post-update-cmd": [
-            "php -r \"copy('vendor/burdapraha/oc_invoice_pdf/vqmod/xml/invoice_pdf.xml', 'upload/vqmod/xml/invoice_pdf.xml');\""
+            "php -r \"copy('vendor/burdapraha/oc_invoice_pdf/upload/vqmod/xml/invoice_pdf.xml', 'upload/vqmod/xml/invoice_pdf.xml');\""
         ]
     } 
 ```
