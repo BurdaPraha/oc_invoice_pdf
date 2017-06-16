@@ -25,7 +25,7 @@ It will move vQmod xml file to correct folder.
 
 5. add constant to your config.php & admin/config.php for storage PDF files: 
 For example: `define('INVOICES_DIR', DIR_IMAGE . '/invoices');` and fix this folder for reading from web by .htaccess
-6. optionally you can add row to your `.gitignore` file with path to tracy.xml (example: upload/vqmod/xml/invoice_pdf.xml)
+6. optionally you can add row to your `.gitignore` file with path to invoice_pdf.xml (example: upload/vqmod/xml/invoice_pdf.xml)
 7. celebrate!
 
 ## Credits
