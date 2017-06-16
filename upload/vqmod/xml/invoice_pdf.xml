@@ -197,13 +197,14 @@
             <search position="before" offset="3"><![CDATA[// Admin Alert Mail]]></search>
             <add>
                 <![CDATA[
-                    $url = "{$order_info['store_url']}/admin/index.php?route=module/invoicepdf&order_id={$order_id}";
-                    $json = do_curl_request($url, $fields);
-
-                    $invoice = json_decode($json)['invoice'];
+                    $url        = "{$order_info['store_url']}/admin/index.php?route=module/invoicepdf&order_id={$order_id}";
+                    $request    = do_curl_request($url, $fields);
+                    $response   = json_decode($json);
 
                     // add invoice to the mail
-                    $mail->addAttachment($invoice);
+                    if(isset($response->invoice)) {
+                        $mail->addAttachment($response->invoice);
+                    }
                 ]]>
             </add>
         </operation>
