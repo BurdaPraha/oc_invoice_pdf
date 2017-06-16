@@ -56,7 +56,6 @@ function invoice_pdf($view, $data, $return_path = false) {
         // todo: check order status before saving
         file_put_contents($location, $pdf->output());
 
-        //$pdf->render();
         //$pdf->stream("{$name}.pdf");
     }
 
