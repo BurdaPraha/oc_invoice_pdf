@@ -46,6 +46,7 @@ function invoice_pdf($view, $data, $return_path = false) {
         $options->set('defaultFont', 'sans-serif')
             ->set('isHtml5ParserEnabled', true)
             ->set('isFontSubsettingEnabled', true)
+            ->set('isRemoteEnabled', true)
             ->set('isPhpEnabled', true)
             ->set('tempDir', $storage);
 
