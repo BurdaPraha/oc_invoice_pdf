@@ -185,7 +185,7 @@
             <add>
                 <![CDATA[
 
-                    if(!empty($attachment) && file_exist($invoice))) {
+                    if(!empty($attachment) && file_exist($invoice)) {
                         $mail->addAttachment($invoice);
                     }
 
