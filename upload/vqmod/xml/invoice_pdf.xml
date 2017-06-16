@@ -11,6 +11,7 @@
         </operation>
     </file>
 
+
     <file name="admin/view/template/sale/order_invoice.tpl">
         <operation>
             <search position="replace"><![CDATA[<div style="page-break-after: always;">]]></search>
@@ -29,6 +30,7 @@
         </operation>
     </file>
 
+
     <file name="admin/view/template/sale/order_info.tpl">
         <operation>
             <search position="replace"><![CDATA[<a href="<?php echo $invoice; ?>" target="_blank" data-toggle="tooltip" title="<?php echo $button_invoice_print; ?>" class="btn btn-info"><i class="fa fa-print"></i></a>]]></search>
@@ -39,6 +41,7 @@
             </add>
         </operation>
     </file>
+
 
     <file name="admin/view/template/sale/order_list.tpl">
         <operation>
@@ -60,6 +63,7 @@
             </add>
         </operation>
     </file>
+
 
     <file name="admin/controller/sale/order.php">
         <operation>
@@ -120,6 +124,7 @@
             </add>
         </operation>
     </file>
+
 
     <file name="admin/view/template/sale/order_invoice.tpl">
         <operation info="support for czech language">
@@ -229,6 +234,5 @@
         </operation>
 
     </file>
-
 
 </modification>
