@@ -63,58 +63,42 @@
 
     <file name="admin/controller/sale/order.php">
         <operation>
-            <search position="replace"><![CDATA[public function invoice() {]]></search>
-            <add><![CDATA[public function invoice($custom_array = null) {]]></add>
-        </operation>
-
-        <operation>
             <search position="after"><![CDATA[$data['button_invoice_print'] = $this->language->get('button_invoice_print');]]></search>
             <add><![CDATA[$data['button_pdf_invoice'] = $this->language->get('button_pdf_invoice');]]></add>
         </operation>
-
         <operation>
-            <search position="replace"><![CDATA[$orders = array();]]></search>
+            <search position="after"><![CDATA[invoice() {]]></search>
+            <add><![CDATA[$pdf = false;]]></add>
+        </operation>
+        <operation>
+            <search position="replace" offset="7"><![CDATA[$orders = array();]]></search>
             <add><![CDATA[
 
             $orders = array();
 
-            // custom orders ID delivered from argument
-            if(isset($custom_array['orders']))
-            {
-                array_merge($orders, $custom_array['orders']);
+            if (isset($this->request->post['selected'])) {
+
+                $orders = $this->request->post['selected'];
+                $pdf = (isset($this->request->get['pdf'])) ? true : false;
+
+            } elseif (isset($this->request->get['order_id'])) {
+
+                $orders[] = $this->request->get['order_id'];
+                $pdf = (isset($this->request->get['pdf'])) ? true : false;
+
             }
-
-            // pdf from administrator request
-            $pdf = (isset($this->request->get['pdf'])) ? true : false;
-            $return_invoice_path = false;
-
             ]]>
             </add>
         </operation>
-
         <operation>
-            <search position="replace"><![CDATA[$this->response->setOutput($this->load->view('sale/order_invoice', $data));]]></search>
+            <search position="after"><![CDATA[$this->response->setOutput($this->load->view('sale/order_invoice', $data));]]></search>
             <add><![CDATA[
 
-                // return just data for request from catalog
-                if(isset($custom_array['return_invoice_path']))
-                {
-                    $pdf = true;
-                    $return_invoice_path = true;
-                }
-
-                // print pdf to request from administrator
                 if ($pdf)
                 {
                     $order_view = $this->load->view('sale/order_invoice', $data);
-                    return invoice_pdf($order_view, $data, $return_invoice_path);
-                }
-
-                // default response
-                if(!isset($custom_array['return_only_data']) && false == $pdf)
-                {
-                    echo "tady je klasicky vystup";
-                    //$this->response->setOutput($this->load->view('sale/order_invoice', $data));
+                    $pdf_printer = invoice_pdf($order_view, $data);
+                    $this->response->setOutput();
                 }
 
             ]]>
@@ -196,35 +180,30 @@
             </add>
         </operation>
 
-
-        <operation info="generate invoice if order status id done">
-            <search position="before"><![CDATA[$mail = new Mail();]]></search>
-            <add>
-                <![CDATA[
-                    $success_status_array = array_flip($this->config->get('config_complete_status'));
-
-                    if(array_key_exists($order_status_id, $success_status_array))
-                    {
-                        // request to generate invoice file
-                        $url        = "{$order_info['store_url']}admin/index.php?route=module/invoicepdf&order_id={$order_id}";
-                        $request    = do_curl_request($url);
-                        $response   = json_decode($request);
-
-                        // add invoice to the mail
-                        $attachment = isset($response->path) ? $response->path : '';
-                    }
-                ]]>
-            </add>
-        </operation>
-
-
         <operation info="new feature attachment to order history">
             <search position="after"><![CDATA[$mail->setText($text);]]></search>
             <add>
                 <![CDATA[
-                    if(!empty($attachment) && file_exists($attachment)) {
-                        $mail->addAttachment($attachment);
+
+                    if(!empty($attachment) && file_exist($invoice))) {
+                        $mail->addAttachment($invoice);
                     }
+
+                ]]>
+            </add>
+        </operation>
+
+        <operation info="generate invoice number">
+            <search position="before" offset="3"><![CDATA[// Admin Alert Mail]]></search>
+            <add>
+                <![CDATA[
+                    $url = "{$order_info['store_url']}/admin/index.php?route=module/invoicepdf&order_id={$order_id}";
+                    $json = do_curl_request($url, $fields);
+
+                    $invoice = json_decode($json)['invoice'];
+
+                    // add invoice to the mail
+                    $mail->addAttachment($invoice);
                 ]]>
             </add>
         </operation>
