@@ -1,13 +1,47 @@
 <modification>
     <id><![CDATA[Invoice to PDF]]></id>
-    <version><![CDATA[1.0.1]]></version>
-    <vqmver><![CDATA[1.00]]></vqmver>
-    <author><![CDATA[BurdaPraha]]></author>
+    <version><![CDATA[1.5.0]]></version>
+    <vqmver required="true">2.5.0</vqmver>
+    <author><![CDATA[Michal Landsman <michal.landsman@burda.cz>]]></author>
 
-    <file name="admin/language/cs-cz/cs-cz.php">
-        <operation>
+
+    <!-- curl function for admin requests from catalog -->
+
+    <file name="system/helper/general.php">
+        <operation info="curl function">
             <search position="after"><![CDATA[<?php]]></search>
-            <add><![CDATA[$_['button_pdf_invoice']	= 'PDF faktura';]]></add>
+            <add>
+                <![CDATA[
+                    if(!function_exists('do_curl_request')){
+                        function do_curl_request($url, $params=array()) {
+                            $ch = curl_init();
+                            curl_setopt($ch,CURLOPT_URL, $url);
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                            curl_setopt($ch, CURLOPT_COOKIEJAR, '/tmp/apicookie.txt');
+                            curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/apicookie.txt');
+
+                            $params_string = '';
+                            if (is_array($params) && count($params)) {
+                                foreach($params as $key=>$value) {
+                                    $params_string .= $key.'='.$value.'&';
+                                }
+                                rtrim($params_string, '&');
+
+                                curl_setopt($ch,CURLOPT_POST, count($params));
+                                curl_setopt($ch,CURLOPT_POSTFIELDS, $params_string);
+                            }
+
+                            //execute post
+                            $result = curl_exec($ch);
+
+                            //close connection
+                            curl_close($ch);
+
+                            return $result;
+                        }
+                    }
+                ]]>
+            </add>
         </operation>
     </file>
 
@@ -27,6 +61,24 @@
             <div>
             <?php }?>
             <?php $loop++;?>]]></add>
+        </operation>
+    </file>
+
+
+    <!-- add admin icon for manual download invoice(s) -->
+
+    <file name="admin/language/cs-cz/cs-cz.php" error="skip">
+        <operation>
+            <search position="after"><![CDATA[<?php]]></search>
+            <add><![CDATA[$_['button_pdf_invoice']	= 'PDF faktura';]]></add>
+        </operation>
+    </file>
+
+
+    <file name="admin/language/en-gb/en-gb.php" error="skip">
+        <operation>
+            <search position="after"><![CDATA[<?php]]></search>
+            <add><![CDATA[$_['button_pdf_invoice']	= 'PDF faktura';]]></add>
         </operation>
     </file>
 
@@ -66,6 +118,35 @@
 
 
     <file name="admin/controller/sale/order.php">
+        <operation info="add eshop name">
+            <search position="after"><![CDATA[
+			    $data['title'] = $this->language->get('text_invoice');
+			]]></search>
+            <add><![CDATA[
+		        $data['name'] = $this->config->get('config_name');
+			]]></add>
+        </operation>
+
+        <operation info="add logo to invoice">
+            <search position="before" index="2"><![CDATA[
+			if ($order_info['invoice_no']) {
+			]]></search>
+            <add><![CDATA[
+                $store_info_full = $this->model_setting_setting->getSetting('config', $order_info['store_id']);
+
+                //echo "<pre>";
+                //var_dump($store_info_full);
+                //echo "</pre>";
+                //die;
+
+				if (is_file(DIR_IMAGE . $store_info_full['config_logo_invoice'])) {
+					$data['logo_invoice'] = $server . 'image/' . $store_info_full['config_logo_invoice'];
+				} else {
+					$data['logo_invoice'] = '';
+				}
+			]]></add>
+        </operation>
+
         <operation>
             <search position="replace"><![CDATA[public function invoice() {]]></search>
             <add><![CDATA[public function invoice($custom_array = null) {]]></add>
@@ -126,6 +207,8 @@
     </file>
 
 
+    <!-- override all fonts to font with UTF-8 support -->
+
     <file name="admin/view/template/sale/order_invoice.tpl">
         <operation info="support for czech language">
             <search position="before"><![CDATA[</head>]]></search>
@@ -139,8 +222,25 @@
                 ]]>
             </add>
         </operation>
+
+        <operation info="replace headline to logo" error="log">
+            <search position="replace"><![CDATA[<h1><?php echo $text_invoice; ?> #<?php echo $order['order_id']; ?></h1>]]></search>
+            <add>
+                <![CDATA[
+                    <?php if ($logo_invoice) { ?>
+                      <div class="logo_place">
+                        <img src="<?php echo $logo_invoice; ?>" title="<?php echo $name; ?>" alt="<?php echo $name; ?>" class="the_logo" />
+                      </div>
+                    <?php } else { ?>
+                      <h1><?php echo $name; ?></h1>
+                    <?php } ?>
+                ]]>
+            </add>
+        </operation>
     </file>
 
+
+    <!-- little hack for access to admin module without login, shame on me! -->
 
     <file name="admin/controller/startup/login.php,admin/controller/startup/permission.php,admin/controller/user/user_permission.php">
         <operation info="ignore our module for login">
@@ -152,54 +252,15 @@
     </file>
 
 
-    <file name="system/helper/general.php">
-        <operation info="curl function">
-            <search position="after"><![CDATA[<?php]]></search>
-            <add>
-                <![CDATA[
-                    if(!function_exists('do_curl_request')){
-                        function do_curl_request($url, $params=array()) {
-                            $ch = curl_init();
-                            curl_setopt($ch,CURLOPT_URL, $url);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                            curl_setopt($ch, CURLOPT_COOKIEJAR, '/tmp/apicookie.txt');
-                            curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/apicookie.txt');
-
-                            $params_string = '';
-                            if (is_array($params) && count($params)) {
-                                foreach($params as $key=>$value) {
-                                    $params_string .= $key.'='.$value.'&';
-                                }
-                                rtrim($params_string, '&');
-
-                                curl_setopt($ch,CURLOPT_POST, count($params));
-                                curl_setopt($ch,CURLOPT_POSTFIELDS, $params_string);
-                            }
-
-                            //execute post
-                            $result = curl_exec($ch);
-
-                            //close connection
-                            curl_close($ch);
-
-                            return $result;
-                        }
-                    }
-                ]]>
-            </add>
-        </operation>
-    </file>
-
+    <!-- generate invoice number & attachment for email -->
 
     <file name="catalog/model/checkout/order.php">
-
         <operation info="new feature attachment to order history">
             <search position="replace"><![CDATA[public function addOrderHistory($order_id, $order_status_id, $comment = '', $notify = false, $override = false) {]]></search>
             <add>
                 <![CDATA[public function addOrderHistory($order_id, $order_status_id, $comment = '', $notify = false, $override = false, $attachment = '') {]]>
             </add>
         </operation>
-
 
         <operation info="generate invoice if order status id done">
             <search position="before"><![CDATA[$mail = new Mail();]]></search>
@@ -221,7 +282,6 @@
             </add>
         </operation>
 
-
         <operation info="new feature attachment to order history">
             <search position="after"><![CDATA[$mail->setText($text);]]></search>
             <add>
@@ -232,7 +292,102 @@
                 ]]>
             </add>
         </operation>
+    </file>
 
+
+    <!-- add new logo type for invoices to admin settings -->
+
+    <file path="admin/language/cs-cz/setting/" name="setting.php,store.php">
+        <operation>
+            <search position="after"><![CDATA[<?php]]></search>
+            <add><![CDATA[
+                $_['entry_logo_invoice'] = 'Logo pro fakturu'; // Invoice to pdf
+			]]></add>
+        </operation>
+    </file>
+
+
+    <file path="admin/language/english/setting/" name="setting.php,store.php">
+        <operation>
+            <search position="after"><![CDATA[<?php]]></search>
+            <add><![CDATA[
+                $_['entry_logo_invoice'] = 'Logo for invoice'; // Invoice to pdf
+			]]></add>
+        </operation>
+    </file>
+
+
+    <file path="admin/controller/setting/" name="setting.php,store.php">
+        <operation>
+            <search position="after"><![CDATA[
+				$data['entry_logo'] = $this->language->get('entry_logo');
+			]]></search>
+            <add><![CDATA[
+		        $data['entry_logo_invoice'] = $this->language->get('entry_logo_invoice'); // invoice to pdf vqmod
+			]]></add>
+        </operation>
+
+        <operation>
+            <search position="before"><![CDATA[
+				if (isset($this->request->post['config_logo'])) {
+			]]></search>
+            <add><![CDATA[
+                if (isset($this->request->post['config_logo_invoice'])) {
+                    $data['config_logo_invoice'] = $this->request->post['config_logo_invoice'];
+                } elseif (isset($store_info['config_logo_invoice'])) {
+                    $data['config_logo_invoice'] = $store_info['config_logo_invoice'];
+                } else {
+                    $data['config_logo_invoice'] = $this->config->get('config_logo_invoice');
+                }
+			]]></add>
+        </operation>
+
+        <operation>
+            <search position="before"><![CDATA[
+				if (isset($this->request->post['config_logo']) && is_file(DIR_IMAGE . $this->request->post['config_logo'])) {
+			]]></search>
+            <add><![CDATA[
+                if(!isset($store_info)) {
+                    $store_condition = $this->config->get('config_logo_invoice') && is_file(DIR_IMAGE . $this->config->get('config_logo_invoice'));
+                    $store_logotype  = $this->config->get('config_logo_invoice');
+                } else {
+                    $store_condition = isset($store_info['config_logo_invoice']) && is_file(DIR_IMAGE . $store_info['config_logo_invoice']);
+                    $store_logotype  = $store_info['config_logo_invoice'];
+                }
+
+                if (isset($this->request->post['config_logo_invoice']) && is_file(DIR_IMAGE . $this->request->post['config_logo_invoice'])) {
+                    $data['logo_invoice'] = $this->model_tool_image->resize($this->request->post['config_logo_invoice'], 100, 100);
+                } elseif ($store_condition) {
+                    $data['logo_invoice'] = $this->model_tool_image->resize($store_logotype, 100, 100);
+                } else {
+                    $data['logo_invoice'] = $this->model_tool_image->resize('no_image.png', 100, 100);
+                }
+			]]></add>
+        </operation>
+    </file>
+
+
+    <file path="admin/view/template/setting/" name="setting.tpl,store_form.tpl">
+        <operation>
+            <search position="after"><![CDATA[
+				<div class="tab-pane" id="tab-image">
+			]]></search>
+            <add><![CDATA[
+			<?php // invoice to pdf vqmod ?>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-logo-invoice"><?php echo $entry_logo_invoice; ?></label>
+                <div class="col-sm-10">
+                    <a href="" id="thumb-logo-invoice" data-toggle="image" class="img-thumbnail">
+                        <img src="<?php echo $logo_invoice; ?>" alt="" title="" data-placeholder="<?php echo $placeholder; ?>" />
+                    </a>
+                    <input type="hidden" name="config_logo_invoice" value="<?php echo $config_logo_invoice; ?>" id="input-logo-invoice" />
+                </div>
+              </div>
+
+			<?php // invoice to pdf vqmod end ?>
+			]]></add>
+        </operation>
     </file>
 
 </modification>

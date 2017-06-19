@@ -13,7 +13,7 @@ use Svg\Surface;
  */
 function invoice_pdf($view, $data, $return_path = false) {
 
-    $storage    = INVOICES_DIR;
+    $storage    = INVOICES_DIR; // todo: condition to defined constant
     $shop_name  = "{$data['name']}";
     $orders     = $data['orders'];
 
