@@ -26,9 +26,10 @@ class ControllerModuleInvoicePdf extends Controller {
         $this->load->model('setting/setting');
 
         $invoice_request = $this->model_sale_order->createInvoiceNo($this->order_id);
-        $invoice_response = json_decode($invoice_request);
+        $invoice_response = $invoice_request;
 
-        if(isset($invoice_response->invoice_no)) {
+        if(!empty($invoice_response)) {
+
             $custom_parameters = [
                 'return_invoice_path' => true,
                 'orders' => [
@@ -36,8 +37,8 @@ class ControllerModuleInvoicePdf extends Controller {
                 ]
             ];
 
-            $controller_response = $this->load->controller('sale/order/invoice', $custom_parameters);
-            $json = json_encode(['path' => $controller_response]);
+            $controller_request = $this->load->controller('sale/order/invoice', $custom_parameters);
+            $json = json_encode(['path' => $controller_request]);
         }
         else {
             $json = json_encode(['error' => 'createInvoiceNo error']);
