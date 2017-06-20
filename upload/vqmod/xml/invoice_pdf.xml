@@ -133,6 +133,7 @@
 			]]></search>
             <add><![CDATA[
                 $store_info_full = $this->model_setting_setting->getSetting('config', $order_info['store_id']);
+                $data['store_id'] = $order_info['store_id'];
 
                 //echo "<pre>";
                 //var_dump($store_info_full);
@@ -352,7 +353,7 @@
                     $store_logotype  = $this->config->get('config_logo_invoice');
                 } else {
                     $store_condition = isset($store_info['config_logo_invoice']) && is_file(DIR_IMAGE . $store_info['config_logo_invoice']);
-                    $store_logotype  = $store_info['config_logo_invoice'];
+                    $store_logotype  = isset($store_info['config_logo_invoice']) ? $store_info['config_logo_invoice'] : '';
                 }
 
                 if (isset($this->request->post['config_logo_invoice']) && is_file(DIR_IMAGE . $this->request->post['config_logo_invoice'])) {
