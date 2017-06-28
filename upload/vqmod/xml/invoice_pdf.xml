@@ -105,8 +105,8 @@
             </add>
         </operation>
         <operation>
-            <search position="replace"><![CDATA[$('#button-shipping, #button-invoice')]]></search>
-            <add><![CDATA[$('#button-shipping, #button-invoice, #button-pdf')]]></add>
+            <search position="replace"><![CDATA[#button-shipping, #button-invoice]]></search>
+            <add><![CDATA[#button-shipping, #button-invoice, #button-pdf]]></add>
         </operation>
         <operation>
             <search position="after"><![CDATA[if (selected.length) {]]></search>
