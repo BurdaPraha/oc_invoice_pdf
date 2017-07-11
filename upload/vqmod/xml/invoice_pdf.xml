@@ -140,7 +140,7 @@
                 //echo "</pre>";
                 //die;
 
-				if (is_file(DIR_IMAGE . $store_info_full['config_logo_invoice'])) {
+				if (isset($store_info_full['config_logo_invoice']) && is_file(DIR_IMAGE . $store_info_full['config_logo_invoice'])) {
 					$data['logo_invoice'] = $server . 'image/' . $store_info_full['config_logo_invoice'];
 				} else {
 					$data['logo_invoice'] = '';
