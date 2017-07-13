@@ -308,7 +308,7 @@
     </file>
 
 
-    <file path="admin/language/english/setting/" name="setting.php,store.php">
+    <file path="admin/language/en-gb/setting/" name="setting.php,store.php">
         <operation>
             <search position="after"><![CDATA[<?php]]></search>
             <add><![CDATA[
