@@ -79,7 +79,7 @@ function invoice_download($location) {
 
     header("Content-Description: File Transfer");
     header("Content-Type: application/octet-stream");
-    header("Content-Disposition: attachment; filename='" . basename($location) . "'");
+    header("Content-Disposition: attachment; filename=\"" . basename($location) . "\"");
 
     readfile ($location);
     exit();
